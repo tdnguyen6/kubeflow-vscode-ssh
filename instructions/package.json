@@ -1,0 +1,11 @@
+{
+	"dependencies": {
+		"postcss": "^8.3.11",
+		"tailwindcss": "^2.2.19",
+		"tailwindcss-cli": "^0.1.2"
+	},
+	"scripts": {
+		"watch-tw": "tailwindcss-cli build -i css/tailwind.css -o dist/main.css --purge dist/index.html -w",
+		"tw": "tailwindcss-cli build -i css/tailwind.css -o dist/main.css --purge dist/index.html"
+	}
+}

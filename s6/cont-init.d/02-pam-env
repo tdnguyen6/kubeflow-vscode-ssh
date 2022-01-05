@@ -1,0 +1,3 @@
+#!/usr/bin/with-contenv bash
+
+env | grep KUBERNETES_ > /etc/environment

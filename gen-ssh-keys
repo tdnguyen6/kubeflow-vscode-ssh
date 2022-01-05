@@ -1,0 +1,6 @@
+#! /usr/bin/env bash
+
+ssh-keygen -q -N "" -C "" -t dsa -f ssh_host_dsa_key
+ssh-keygen -q -N "" -C "" -t rsa -b 4096 -f ssh_host_rsa_key
+ssh-keygen -q -N "" -C "" -t ecdsa -f ssh_host_ecdsa_key
+ssh-keygen -q -N "" -C "" -t ed25519 -f ssh_host_ed25519_key

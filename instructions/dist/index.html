@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="main.css" />
+    <link rel="stylesheet" href="prism.css" />
+    <title>VSCode SSH Instructions</title>
+  </head>
+  <body>
+    <div class="mx-auto sm:w-full md:w-3/4 lg:w-1/2 py-10">
+      <div class="font-bold text-4xl text-center py-10">
+        VSCode SSH Instructions
+      </div>
+      <section id="chisel" class="p-5">
+        <div class="font-bold text-2xl">Chisel</div>
+        <p class="py-2">
+          The kubeflow system only provide a single HTTP endpoint to the
+          development environment host. HTTP is a layer 7 protocol, and SSH is
+          another layer 7 protocol. As a result, they conflict and we cannot
+          directly connect using SSH.
+        </p>
+        <p class="py-2">
+          We use chisel to overcome this limitation of Kubeflow. Chisel is a
+          tool to setup a layer 4 TCP/UDP tunnel over a layer 7 HTTP connection.
+          After the tunnel is up, SSH can work on top of this layer 4 tunnel and
+          allow us to connect to the development environment host inside
+          Kubeflow.
+        </p>
+        <p class="py-2">
+          To install Chisel, follow the instructions in chisel's
+          <a
+            href="https://github.com/jpillora/chisel#install"
+            target="_blank"
+            class="text-blue-500 italic underline"
+            >GitHub Repository</a
+          >.
+        </p>
+      </section>
+
+      <section id="user-input" class="p-5">
+        <div class="font-bold text-2xl">User Input</div>
+        <p class="py-2">
+          Fill in the inputs to generate code snippets for your account
+        </p>
+        <p class="py-2">
+          AUTH_METHOD:
+          <select id="auth-method" class="border-2 p-2 w-full rounded-lg mt-2">
+            <option value="token">token</option>
+            <option value="key">key</option>
+          </select>
+        </p>
+        <p class="py-2 ease-in-out token-based-auth">
+          API_TOKEN:
+          <input class="border-2 p-2 w-full rounded-lg mt-2" id="api-token" />
+        </p>
+        <p class="py-2 key-based-auth">
+          AUTH_KEY:
+          <input class="border-2 p-2 w-full rounded-lg mt-2" id="auth-key" />
+        </p>
+        <p class="py-2 key-based-auth">
+          AUTH_EMAIL:
+          <input class="border-2 p-2 w-full rounded-lg mt-2" id="auth-email" />
+        </p>
+        <p class="py-2">
+          API_ENDPOINT:
+          <input
+            class="border-2 p-2 w-full rounded-lg mt-2"
+            id="api-endpoint"
+          />
+        </p>
+        <p class="py-2">
+          SSH_HOST:
+          <input class="border-2 p-2 w-full rounded-lg mt-2" id="ssh-host" />
+        </p>
+        <p class="py-2">
+          <button
+            class="rounded-lg bg-green-300 border-black border-2 py-2 px-4"
+            onclick="location.reload()"
+          >
+            Generate
+          </button>
+        </p>
+      </section>
+      <section id="auto-script" class="p-5">
+        <div class="font-bold text-2xl">Automated Script</div>
+        <div class="py-5">
+          <div class="text-xl font-bold pb-4">Prequisites:</div>
+          <ul class="list-disc">
+            <li class="ml-4 list-item">Installed chisel</li>
+            <li class="ml-4 list-item">Added chisel to PATH</li>
+          </ul>
+        </div>
+        <div class="text-xl font-bold pb-4">MacOs/Linux:</div>
+        <pre
+          class="line-numbers language-bash key-based-auth"
+        ><code>export AUTH_METHOD="key"
+export AUTH_KEY="<span class="auth-key-placeholder"></span>"
+export AUTH_EMAIL="<span class="auth-email-placeholder"></span>"
+export SSH_HOST="<span class="ssh-host-placeholder"></span>"
+export API_ENDPOINT="<span class="api-endpoint-placeholder"></span>"
+curl -L -H "x-auth-key: $AUTH_KEY" -H "x-auth-email: $AUTH_EMAIL" "${API_ENDPOINT}kubeflow-ssh-setup.sh | bash</code></pre>
+        <pre
+          class="line-numbers language-bash token-based-auth"
+        ><code>export AUTH_METHOD="token"
+export API_TOKEN="<span class="api-token-placeholder"></span>"
+export SSH_HOST="<span class="ssh-host-placeholder"></span>"
+export API_ENDPOINT="<span class="api-endpoint-placeholder"></span>"
+curl -L -H "Authorization: Bearer $API_TOKEN" "${API_ENDPOINT}kubeflow-ssh-setup.sh" | bash</code></pre>
+        <div class="text-xl font-bold pb-4 mt-8">Windows:</div>
+        <pre
+          class="line-numbers language-powershell key-based-auth"
+        ><code>$env:AUTH_METHOD="key"
+$env:AUTH_KEY="<span class="auth-key-placeholder"></span>"
+$env:AUTH_EMAIL="<span class="auth-email-placeholder"></span>"
+$env:SSH_HOST="<span class="ssh-host-placeholder"></span>"
+$env:API_ENDPOINT="<span class="api-endpoint-placeholder"></span>"
+. { iwr -useb -h @{'x-auth-key' = "$env:AUTH_KEY"; 'x-auth-email' = "$env:AUTH_EMAIL"} "$($env:API_ENDPOINT)kubeflow-ssh-setup.ps1" } | iex </code></pre>
+        <pre
+          class="line-numbers language-powershell token-based-auth"
+        ><code>$env:AUTH_METHOD="token"
+$env:API_TOKEN="<span class="api-token-placeholder"></span>"
+$env:SSH_HOST="<span class="ssh-host-placeholder"></span>"
+$env:API_ENDPOINT="<span class="api-endpoint-placeholder"></span>"
+. { iwr -useb -h @{'Authorization' = "Bearer $env:API_TOKEN"} "$($env:API_ENDPOINT)kubeflow-ssh-setup.ps1" } | iex</code></pre>
+      </section>
+      <section id="host-key" class="p-5">
+        <div class="font-bold text-2xl">Host keys</div>
+        <pre class="line-numbers" data-src="host-keys"></pre>
+      </section>
+      <section id="ssh-config" class="p-5">
+        <div class="font-bold text-2xl">
+          Public/Private Authorization Keys Pair
+        </div>
+        Public key
+        <pre class="line-numbers" data-src="id_rsa.pub"></pre>
+        Private key
+        <pre class="line-numbers" data-src="id_rsa"></pre>
+      </section>
+      <section id="ssh-config" class="p-5">
+        <div class="font-bold text-2xl">SSH Config</div>
+        Template
+        <pre
+          class="line-numbers"
+        ><code class="language-shell">Host <span class="ssh-host-placeholder"></span>
+	HostName localhost
+	ProxyCommand &lt;/path/to/chisel&gt; client --header &lt;API token/key authentication headers&gt; &lt;kubeflow api endpoint&gt;<span class="url-path"></span> :stdio:%h:%p
+	User jovyan
+	IdentityFile &lt;/path/to/id_rsa&gt;
+	StrictHostKeyChecking yes</code>
+      </pre>
+        Generated:
+        <pre
+          class="line-numbers key-based-auth"
+        ><code class="language-shell">Host <span class="ssh-host-placeholder"></span>
+	HostName localhost
+	ProxyCommand chisel client --header "x-auth-key: <span class="auth-key-placeholder"></span>" --header "x-auth-email: <span class="auth-email-placeholder"></span>" <span class="urlapi-endpoint-placeholderspan> :stdio:%h:%p
+	User jovyan
+	IdentityFile ~/.ssh/kubeflow/<span class="ssh-host-placeholder"></span>/id_rsa
+	StrictHostKeyChecking yes</code>
+      </pre>
+        <pre
+          class="line-numbers token-based-auth"
+        ><code class="language-shell">Host <span class="ssh-host-placeholder"></span>
+	HostName localhost
+	ProxyCommand chisel client --header "Authorization: Bearer <span class="api-token-placeholder"></span>" <span class="api-endpoint-placeholder"></span> :stdio:%h:%p
+	User jovyan
+	IdentityFile ~/.ssh/kubeflow/<span class="ssh-host-placeholder"></span>/id_rsa
+	StrictHostKeyChecking yes</code>
+      </pre>
+      </section>
+    </div>
+  </body>
+  <script src="prism.js"></script>
+  <script>
+    let authMethod = document.getElementById("auth-method");
+    let apiToken = document.getElementById("api-token");
+    let authKey = document.getElementById("auth-key");
+    let authEmail = document.getElementById("auth-email");
+    let apiEndpoint = document.getElementById("api-endpoint");
+    let sshHost = document.getElementById("ssh-host");
+    authMethod.addEventListener("change", (e) => {
+      if (authMethod.value == "token") {
+        [...document.getElementsByClassName("key-based-auth")].forEach((f) => {
+          f.classList.add("hidden");
+        });
+        [...document.getElementsByClassName("token-based-auth")].forEach(
+          (f) => {
+            f.classList.remove("hidden");
+          }
+        );
+      } else {
+        [...document.getElementsByClassName("key-based-auth")].forEach((f) => {
+          f.classList.remove("hidden");
+        });
+        [...document.getElementsByClassName("token-based-auth")].forEach(
+          (f) => {
+            f.classList.add("hidden");
+          }
+        );
+      }
+      localStorage["authMethod"] = e.target.value;
+    });
+    apiToken.addEventListener("keyup", (e) => {
+      localStorage["apiToken"] = e.target.value;
+      [...document.getElementsByClassName("api-token-placeholder")].forEach(
+        (f) => {
+          f.innerText = e.target.value;
+        }
+      );
+    });
+    authKey.addEventListener("keyup", (e) => {
+      localStorage["authKey"] = e.target.value;
+      [...document.getElementsByClassName("auth-key-placeholder")].forEach(
+        (f) => {
+          f.innerText = e.target.value;
+        }
+      );
+    });
+    authEmail.addEventListener("keyup", (e) => {
+      localStorage["authEmail"] = e.target.value;
+      [...document.getElementsByClassName("auth-email-placeholder")].forEach(
+        (f) => {
+          f.innerText = e.target.value;
+        }
+      );
+    });
+    apiEndpoint.addEventListener("keyup", (e) => {
+      localStorage["apiEndpoint"] = e.target.value;
+      [...document.getElementsByClassName("api-endpoint-placeholder")].forEach(
+        (f) => {
+          f.innerText = e.target.value;
+        }
+      );
+    });
+    sshHost.addEventListener("keyup", (e) => {
+      if (validateSshHost(e.target.value)) {
+        localStorage["sshHost"] = e.target.value;
+        [...document.getElementsByClassName("ssh-host-placeholder")].forEach(
+          (f) => {
+            f.innerText = e.target.value;
+          }
+        );
+      } else {
+        e.target.value = localStorage["sshHost"];
+      }
+    });
+
+    function validateSshHost(inputString) {
+      let pattern = /^[\/a-z0-9-_]+$/i;
+      if (!pattern.test(inputString)) {
+        alert("SSH Host should only contain - _ / numbers and characters");
+        return false;
+      }
+      return true;
+    }
+
+    // init function
+    (function () {
+      let path_components = location.pathname.split("/");
+      let defaultSshHost = "";
+      if (path_components.length > 3)
+        defaultSshHost = `${path_components[path_components.length - 3]}/${
+          path_components[path_components.length - 2]
+        }`;
+      else defaultSshHost = location.pathname;
+      authMethod.value = localStorage["authMethod"] || "token";
+      apiToken.value = localStorage["apiToken"] || "my-api-token";
+      authKey.value = localStorage["authKey"] || "my-auth-key";
+      authEmail.value = localStorage["authEmail"] || "user@example.com";
+      sshHost.value = localStorage["sshHost"] || defaultSshHost;
+      apiEndpoint.value =
+        localStorage["apiEndpoint"] ||
+        `https://kubeflow-api.example.com${location.pathname}`;
+      authMethod.dispatchEvent(new Event("change", { bubbles: true }));
+      apiToken.dispatchEvent(new Event("keyup", { bubbles: true }));
+      authKey.dispatchEvent(new Event("keyup", { bubbles: true }));
+      authEmail.dispatchEvent(new Event("keyup", { bubbles: true }));
+      apiEndpoint.dispatchEvent(new Event("keyup", { bubbles: true }));
+      sshHost.dispatchEvent(new Event("keyup", { bubbles: true }));
+    })();
+  </script>
+</html>

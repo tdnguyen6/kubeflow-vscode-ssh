@@ -1,0 +1,5 @@
+#! /usr/bin/env bash
+
+for file in ../ssh-configs/*.pub; do
+  echo "localhost $(cat $file)" >> dist/host-keys
+done

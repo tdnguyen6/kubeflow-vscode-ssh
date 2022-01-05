@@ -1,0 +1,15 @@
+#!/usr/bin/with-contenv bash
+
+SSH_AUTH_DIR=/home/${NB_USER}/.ssh/auth
+
+if [ -d $SSH_AUTH_DIR ]; then
+  echo -e "Ssh auth credential found at $SSH_AUTH_DIR"
+else
+  echo -e "No ssh auth credential found at $SSH_AUTH_DIR. Generating one..."
+  mkdir -p -m 400 "$SSH_AUTH_DIR"
+  ssh-keygen -b 2048 -t rsa -f "$SSH_AUTH_DIR/id_rsa" -q -N ""
+fi
+
+mv -vf $SSH_AUTH_DIR/id_rsa.pub /home/$NB_USER/.ssh/authorized_keys
+
+ln -sf $SSH_AUTH_DIR/* /instructions

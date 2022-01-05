@@ -1,0 +1,5 @@
+#!/usr/bin/with-contenv bash
+
+cd /instructions
+
+python3 -m http.server 80

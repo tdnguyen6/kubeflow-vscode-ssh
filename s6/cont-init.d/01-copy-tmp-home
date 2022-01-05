@@ -1,0 +1,5 @@
+#!/usr/bin/with-contenv bash
+
+cp -rpn /tmp_home/* /home/
+
+rm -rf /tmp_home

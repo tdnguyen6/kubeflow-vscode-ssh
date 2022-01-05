@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+echo "Input your API token: "
+
+read $token
+
+cat ~/.config/kfp/context.json | jq --arg email $email '. + { client_authentication_header_name: "Authorization", client_authentication_header_value: $token }' | tee ~/.config/kfp/context.json

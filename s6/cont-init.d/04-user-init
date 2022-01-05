@@ -1,0 +1,15 @@
+#!/usr/bin/with-contenv bash
+
+# wait til network connection is ready inside kubernetes
+curl -L 1.1.1.1 --retry-delay 5 --retry-connrefused --retry 10 >/dev/null
+
+USER_INIT=/home/${NB_USER}/.init.d
+
+if [ -d $USER_INIT ]; then
+  for file in $USER_INIT/*; do
+    if [ -f $file ]; then
+      echo -e "Running $file with content:\n$(cat $file)"
+      source "$file"
+    fi
+  done
+fi
