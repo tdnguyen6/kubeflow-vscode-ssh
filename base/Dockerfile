@@ -6,9 +6,10 @@ USER root
 
 RUN apt-get update
 
-RUN curl https://i.jpillora.com/chisel! | bash
-
 RUN apt-get install -y openssh-server sudo zsh jq --no-install-recommends
+
+# chisel
+RUN curl https://i.jpillora.com/chisel! | bash
 
 RUN usermod -aG sudo ${NB_USER}
 
@@ -42,13 +43,6 @@ COPY instructions/dist /instructions
 # ===================== Become NB_USER to install things in $HOME and as default container user =====================
 
 USER ${NB_USER}
-
-# RUN mkdir -p ~/miniconda3 && \
-#     curl -L https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o ~/miniconda3/miniconda.sh && \
-#     bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3 && \
-#     rm -rf ~/miniconda3/miniconda.sh && \
-#     ~/miniconda3/bin/conda init bash && \
-#     ~/miniconda3/bin/conda init zsh
 
 RUN mkdir ${HOME}/.init.d
 
