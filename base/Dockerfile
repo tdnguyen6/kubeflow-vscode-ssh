@@ -40,7 +40,7 @@ RUN mkdir -p -m 777 /tmp_home
 
 COPY instructions/dist /instructions
 
-# ===================== Become NB_USER to install things in $HOME and as default container user =====================
+# ===================== Become NB_USER to install things in $HOME and as def`lt container user =====================
 
 USER ${NB_USER}
 
